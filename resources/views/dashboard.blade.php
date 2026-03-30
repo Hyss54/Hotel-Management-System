@@ -44,7 +44,7 @@
     </div>
 
     <div class="row mt-2">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card stat-card bg-info text-white">
                 <div class="card-body">
                     <h6 class="text-uppercase text-white-50">Check-ins Today</h6>
@@ -53,7 +53,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card stat-card bg-secondary text-white">
                 <div class="card-body">
                     <h6 class="text-uppercase text-white-50">Check-outs Today</h6>
@@ -62,7 +62,16 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+            <div class="card stat-card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-white-50">Today's Collection</h6>
+                    <h2 class="mb-0">GH₵{{ number_format($total_collections_today, 2) }}</h2>
+                    <i class="fas fa-hand-holding-usd icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
             <div class="card stat-card bg-dark text-white">
                 <div class="card-body">
                     <h6 class="text-uppercase text-white-50">Today's Revenue</h6>

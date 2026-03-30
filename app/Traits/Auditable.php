@@ -23,6 +23,11 @@ trait Auditable
         });
     }
 
+    public function auditLogs()
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
     protected function logAudit($event)
     {
         $oldValues = null;

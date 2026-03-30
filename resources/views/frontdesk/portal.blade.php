@@ -28,8 +28,8 @@
         <div class="col-md-3 mb-4">
             <div class="card border-0 shadow-sm bg-warning text-white">
                 <div class="card-body">
-                    <h6 class="text-uppercase small fw-bold">In-House Guests</h6>
-                    <h2 class="mb-0">{{ $inHouseGuests->count() }}</h2>
+                    <h6 class="text-uppercase small fw-bold">Reserved Rooms</h6>
+                    <h2 class="mb-0">{{ $reservedRooms->count() }}</h2>
                     <i class="fas fa-users position-absolute top-50 end-0 translate-middle-y me-3 opacity-25 fa-2x"></i>
                 </div>
             </div>
@@ -64,11 +64,11 @@
 
 
     <div class="row">
-        <!-- In-House Guest Management -->
+        <!-- Reserved Rooms Management -->
         <div class="col-md-8">
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">In-House Guest Management</h5>
+                    <h5 class="mb-0">Reserved Rooms Management</h5>
                     <div class="input-group input-group-sm w-50">
                         <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
                         <input type="text" id="guestSearch" class="form-control bg-light border-start-0"
@@ -82,12 +82,12 @@
                                 <tr>
                                     <th>Room</th>
                                     <th>Guest Name</th>
-                                    <th>Check-out</th>
+                                    <th>Check-in</th>
                                     <th>Quick Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($inHouseGuests as $booking)
+                                @forelse($reservedRooms as $booking)
                                     <tr>
                                         <td><span class="badge bg-light text-dark shadow-sm">Room
                                                 {{ $booking->room->room_number }}</span></td>
@@ -95,7 +95,7 @@
                                             <strong>{{ $booking->customer->name }}</strong><br>
                                             <small class="text-muted">{{ $booking->customer->phone }}</small>
                                         </td>
-                                        <td>{{ $booking->check_out_date->format('M d, Y') }}</td>
+                                        <td>{{ $booking->check_in_date->format('M d, Y') }}</td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <a href="{{ route('bookings.show', $booking) }}" class="btn btn-outline-primary"
@@ -123,7 +123,7 @@
                                     <tr>
                                         <td colspan="4" class="text-center py-5 text-muted">
                                             <i class="fas fa-user-slash fa-3x mb-3 opacity-25"></i><br>
-                                            No guests currently checked in.
+                                            No guests currently reserved.
                                         </td>
                                     </tr>
                                 @endforelse

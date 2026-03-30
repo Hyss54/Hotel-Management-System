@@ -5,74 +5,118 @@
     <meta charset="utf-8">
     <title>Invoice {{ $bill->bill_number }}</title>
     <style>
+        @page {
+            size: A5 portrait;
+            margin: 2.54cm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             color: #333;
+            line-height: 1.4;
         }
 
         .invoice-box {
-            max-width: 800px;
-            margin: auto;
-            padding: 30px;
-            border: 1px solid #eee;
+            width: 100%;
+            padding: 0;
         }
 
-        .header {
-            width: 100%;
+        /* Centered logo header */
+        .logo-header {
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 2px solid #eab308;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
         }
 
-        .header table {
-            width: 100%;
+        .logo-header img {
+            height: 50px;
+            margin-bottom: 5px;
         }
 
         .hotel-name {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             color: #0f172a;
         }
 
+        .hotel-info {
+            font-size: 12px;
+            color: #555;
+        }
+
+        /* Invoice meta row */
+        .invoice-meta-row {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .invoice-meta-row td {
+            vertical-align: middle;
+        }
+
         .invoice-title {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: bold;
             color: #3b82f6;
+        }
+
+        .invoice-meta {
+            font-size: 12px;
             text-align: right;
         }
 
+        /* Details row */
         .details-table {
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
         .details-table td {
             vertical-align: top;
+            font-size: 12px;
         }
 
+        .section-label {
+            font-weight: bold;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        /* Items table */
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin-bottom: 8px;
         }
 
         .items-table th {
             background: #f8fafc;
-            padding: 10px;
+            padding: 5px 10px;
             border-bottom: 1px solid #ddd;
             text-align: left;
+            font-size: 12px;
         }
 
         .items-table td {
-            padding: 10px;
+            padding: 5px 10px;
             border-bottom: 1px solid #eee;
+            font-size: 12px;
         }
 
         .text-right {
             text-align: right !important;
         }
 
+        /* Totals */
         .totals-table {
             width: 50%;
             float: right;
@@ -80,20 +124,21 @@
         }
 
         .totals-table td {
-            padding: 8px;
+            padding: 3px 10px;
+            font-size: 12px;
         }
 
         .totals-table .total-row {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: bold;
             border-top: 2px solid #eab308;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 5px 10px;
+            padding: 3px 10px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             text-transform: uppercase;
         }
@@ -110,57 +155,59 @@
 
         .footer {
             clear: both;
-            margin-top: 50px;
+            margin-top: 15px;
             text-align: center;
             color: #777;
-            font-size: 12px;
+            font-size: 11px;
             border-top: 1px solid #ddd;
-            padding-top: 20px;
+            padding-top: 8px;
         }
     </style>
 </head>
 
 <body>
     <div class="invoice-box">
-        <div class="header">
-            <table>
-                <tr>
-                    <td>
-                        <div class="hotel-name">Gold Plus Hotel</div>
-                        <div>123 Luxury Avenue, Metropolis</div>
-                        <div>Phone: +1 234 567 890</div>
-                        <div>Email: info@goldplushotel.com</div>
-                    </td>
-                    <td class="text-right">
-                        <div class="invoice-title">INVOICE</div>
-                        <div><strong>#{{ $bill->bill_number }}</strong></div>
-                        <div>Date: {{ $bill->issued_at->format('M d, Y') }}</div>
-                        <div style="margin-top: 5px;">
-                            <span class="status-badge status-{{ $bill->status == 'paid' ? 'paid' : 'issued' }}">
-                                {{ $bill->status }}
-                            </span>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+
+        {{-- Centered logo --}}
+        <div class="logo-header">
+            <img src="{{ asset('images/logo.png') }}" alt="Gold Plus Hotel Logo"><br>
+            <div class="hotel-name">Gold Plus Hotel</div>
+            <div class="hotel-info">Abuakwa, Housing Road, Kumasi Ashanti Region, GPS: AH-1127-2941 | Phone: +233 (0)55 932 5033, +233 (0)36 219 5756</div>
         </div>
 
+        {{-- Invoice meta row --}}
+        <table class="invoice-meta-row">
+            <tr>
+                <td style="width: 50%;">
+                    <span class="invoice-title">INVOICE</span>
+                </td>
+                <td style="width: 50%;" class="invoice-meta">
+                    <strong>#{{ $bill->bill_number }}</strong> |
+                    Date: {{ $bill->issued_at->format('M d, Y') }} |
+                    <span class="status-badge status-{{ $bill->status == 'paid' ? 'paid' : 'issued' }}">
+                        {{ $bill->status }}
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        {{-- Billed To / Stay Details --}}
         <table class="details-table">
             <tr>
                 <td style="width: 50%;">
-                    <strong>Billed To:</strong><br>
+                    <div class="section-label">Billed To:</div>
                     {{ $bill->customer->name }}<br>
                     @if($bill->customer->organization)
                         {{ $bill->customer->organization->name }}<br>
                     @endif
-                    {{ $bill->customer->phone }}<br>
-                    {{ $bill->customer->email }}
+                    {{ $bill->customer->phone }}
+                    @if($bill->customer->email) | {{ $bill->customer->email }}@endif
                 </td>
                 <td style="width: 50%;" class="text-right">
                     @if($bill->booking)
-                        <strong>Stay Details:</strong><br>
+                        <div class="section-label" style="text-align: right;">Stay Details:</div>
                         Room: {{ $bill->booking->room->room_number }} ({{ $bill->booking->room->roomType->name }})<br>
-                        Check-in: {{ $bill->booking->check_in_date->format('M d, Y') }}<br>
+                        Check-in: {{ $bill->booking->check_in_date->format('M d, Y') }} |
                         Check-out: {{ $bill->booking->check_out_date->format('M d, Y') }}<br>
                         Duration: {{ $bill->booking->nights }} Night(s)
                     @endif
@@ -168,6 +215,7 @@
             </tr>
         </table>
 
+        {{-- Items --}}
         <table class="items-table">
             <thead>
                 <tr>
@@ -209,6 +257,7 @@
             </tbody>
         </table>
 
+        {{-- Totals --}}
         <table class="totals-table">
             <tr>
                 <td>Subtotal:</td>

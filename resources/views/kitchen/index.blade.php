@@ -7,9 +7,14 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span>Recent Orders</span>
-            <a href="{{ route('kitchen.create') }}" class="btn btn-sm btn-primary">
-                <i class="fas fa-plus"></i> New Order
-            </a>
+            <div>
+                <a href="{{ route('reports.kitchen') }}" class="btn btn-sm btn-outline-secondary me-2">
+                    <i class="fas fa-print"></i> Generate Report
+                </a>
+                <a href="{{ route('kitchen.create') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus"></i> New Order
+                </a>
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

@@ -122,7 +122,7 @@ class BookingController extends Controller
                     $total = $booking->room_charge + $kitchenTotal + $laundryTotal + $barTotal;
 
                     Bill::create([
-                        'bill_number' => 'BILL-' . strtoupper(Str::random(8)),
+                        'bill_number' => Bill::generateBillNumber(),
                         'booking_id' => $booking->id,
                         'customer_id' => $booking->customer_id,
                         'created_by' => auth()->id() ?? 1,

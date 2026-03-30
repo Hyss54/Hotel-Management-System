@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Room;
 use App\Models\User;
 use App\Models\HousekeepingTask;
+use App\Models\InventoryTransaction;
+use App\Models\LaundryItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -25,8 +27,14 @@ class HousekeepingTaskController extends Controller
 
         $tasks = $query->paginate(20)->withQueryString();
         $rooms = Room::all();
+        $laundryItems = LaundryItem::where('is_active', true)->get();
+        $pendingRequests = InventoryTransaction::with('item')
+            ->where('transaction_type', 'clean_delivery')
+            ->latest()
+            ->take(20)
+            ->get();
 
-        return view('housekeeping.index', compact('tasks', 'rooms'));
+        return view('housekeeping.index', compact('tasks', 'rooms', 'laundryItems', 'pendingRequests'));
     }
 
     public function create()

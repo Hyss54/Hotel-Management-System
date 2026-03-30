@@ -52,6 +52,8 @@ class DatabaseSeeder extends Seeder
             'manage-housekeeping-tasks',
             'view-housekeeping-tasks',
             'update-housekeeping-status',
+            'manage-laundry-items',
+            'view-laundry-items',
         ];
         foreach ($permissions as $perm) {
             Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'web']);
@@ -102,6 +104,7 @@ class DatabaseSeeder extends Seeder
             'view-laundry-orders',
             'view-department-reports',
             'view-customers',
+            'view-laundry-items',
         ]);
 
         $housekeepingRole = Role::firstOrCreate(['name' => 'housekeeping', 'guard_name' => 'web']);
@@ -127,6 +130,7 @@ class DatabaseSeeder extends Seeder
             'view-audit-logs',
             'view-incidents',
             'view-housekeeping-tasks',
+            'view-laundry-items',
         ]);
 
         $barRole = Role::firstOrCreate(['name' => 'bar', 'guard_name' => 'web']);

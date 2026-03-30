@@ -15,8 +15,8 @@
 
     <style>
         :root {
-            --primary-color: #0f172a;
-            /* Slate 900 */
+            --primary-color: #1d2e28;
+            /* Dark Green */
             --secondary-color: #3b82f6;
             /* Blue 500 */
             --accent-color: #eab308;
@@ -38,11 +38,12 @@
             position: fixed;
             top: 0;
             left: 0;
-            background-color: var(--primary-color);
-            color: #fff;
+            background-color: #1d2e28;
+            color: #eab308;
             transition: all 0.3s;
             z-index: 1000;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
         }
 
         #sidebar .sidebar-header {
@@ -62,7 +63,7 @@
             font-size: 0.95rem;
             display: flex;
             align-items: center;
-            color: #cbd5e1;
+            color: #eab308;
             text-decoration: none;
             transition: all 0.2s;
             border-left: 3px solid transparent;
@@ -77,7 +78,7 @@
         #sidebar ul li.active>a,
         #sidebar ul li a:hover {
             color: #fff;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
             border-left-color: var(--accent-color);
         }
 
@@ -228,7 +229,7 @@
                 @endif
 
                 @can('view-bookings')
-                    <li class="px-3 pt-3 pb-1 text-uppercase text-muted"
+                    <li class="px-3 pt-3 pb-1 text-uppercase text-white"
                         style="font-size: 0.75rem; letter-spacing: 0.05em;">
                         Front Desk</li>
                     <li class="{{ request()->routeIs('bookings.*') ? 'active' : '' }}">
@@ -254,7 +255,7 @@
                 @endcan
 
                 @if(auth()->user()->can('view-kitchen-orders') || auth()->user()->can('view-laundry-orders') || auth()->user()->can('view-bar-orders') || auth()->user()->can('update-room-status'))
-                    <li class="px-3 pt-3 pb-1 text-uppercase text-muted"
+                    <li class="px-3 pt-3 pb-1 text-uppercase text-white"
                         style="font-size: 0.75rem; letter-spacing: 0.05em;">
                         Services</li>
                 @endif
@@ -266,8 +267,19 @@
                 @endcan
 
                 @can('view-laundry-orders')
-                    <li class="{{ request()->routeIs('laundry.*') ? 'active' : '' }}">
-                        <a href="{{ route('laundry.index') }}"><i class="fas fa-tshirt"></i> Laundry</a>
+                    <li>
+                        <a href="#laundrySubmenu" data-bs-toggle="collapse"
+                            class="dropdown-toggle {{ request()->is('laundry*') ? '' : 'collapsed' }}">
+                            <i class="fas fa-tshirt"></i> Laundry
+                        </a>
+                        <ul class="collapse list-unstyled {{ request()->is('laundry*') ? 'show' : '' }}" id="laundrySubmenu">
+                            <li><a href="{{ route('laundry.index') }}"
+                                    class="{{ request()->is('laundry') || request()->routeIs('laundry.index') ? 'active' : '' }}">Orders</a></li>
+                            @can('view-laundry-items')
+                                <li><a href="{{ route('laundry-items.index') }}"
+                                        class="{{ request()->routeIs('laundry-items.*') ? 'active' : '' }}">Inventory</a></li>
+                            @endcan
+                        </ul>
                     </li>
                 @endcan
 
@@ -280,7 +292,7 @@
                         <ul class="collapse list-unstyled {{ request()->is('bar*') ? 'show' : '' }}" id="barSubmenu">
                             <li><a href="{{ route('bar.index') }}"
                                     class="{{ request()->routeIs('bar.index') ? 'active' : '' }}">Orders</a></li>
-                            @can('manage-bar-items')
+                            @can('view-bar-items')
                                 <li><a href="{{ route('bar-items.index') }}"
                                         class="{{ request()->routeIs('bar-items.*') ? 'active' : '' }}">Inventory</a></li>
                             @endcan
@@ -295,7 +307,7 @@
                 @endcan
 
                 @can('view-bills')
-                    <li class="px-3 pt-3 pb-1 text-uppercase text-muted"
+                    <li class="px-3 pt-3 pb-1 text-uppercase text-white"
                         style="font-size: 0.75rem; letter-spacing: 0.05em;">
                         Finance</li>
                     <li class="{{ request()->routeIs('bills.*') ? 'active' : '' }}">
@@ -305,14 +317,29 @@
 
                 @can('view-reports')
                     @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('management'))
-                        <li class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                            <a href="{{ route('reports.daily-sales') }}"><i class="fas fa-chart-bar"></i> Reports</a>
+                        <li>
+                            <a href="#reportsSubmenu" data-bs-toggle="collapse"
+                                class="dropdown-toggle {{ request()->is('reports*') ? '' : 'collapsed' }}">
+                                <i class="fas fa-chart-bar"></i> Reports
+                            </a>
+                            <ul class="collapse list-unstyled {{ request()->is('reports*') ? 'show' : '' }}" id="reportsSubmenu">
+                                <li><a href="{{ route('reports.daily-sales') }}"
+                                        class="{{ request()->routeIs('reports.daily-sales') ? 'active' : '' }}">Daily Sales</a></li>
+                                <li><a href="{{ route('reports.kitchen') }}"
+                                        class="{{ request()->routeIs('reports.kitchen') ? 'active' : '' }}">Kitchen Orders</a></li>
+                                <li><a href="{{ route('reports.bar') }}"
+                                        class="{{ request()->routeIs('reports.bar') ? 'active' : '' }}">Bar Orders</a></li>
+                                <li><a href="{{ route('reports.laundry') }}"
+                                        class="{{ request()->routeIs('reports.laundry') ? 'active' : '' }}">Laundry Orders</a></li>
+                                <li><a href="{{ route('reports.customers') }}"
+                                        class="{{ request()->routeIs('reports.customers') ? 'active' : '' }}">Guest Reports</a></li>
+                            </ul>
                         </li>
                     @endif
                 @endcan
 
                 @if(auth()->user()->can('manage-rooms') || auth()->user()->can('view-audit-logs') || auth()->user()->can('manage-users'))
-                    <li class="px-3 pt-3 pb-1 text-uppercase text-muted"
+                    <li class="px-3 pt-3 pb-1 text-uppercase text-white"
                         style="font-size: 0.75rem; letter-spacing: 0.05em;">
                         Admin</li>
                 @endif

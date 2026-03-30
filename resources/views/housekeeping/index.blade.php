@@ -104,4 +104,143 @@
             </div>
         </div>
     </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Linen & Laundry Management</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 border-end">
+                    <h6 class="mb-3 text-muted uppercase small fw-bold">Current Inventory (In Housekeeping)</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>In Use</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($laundryItems as $item)
+                                <tr>
+                                    <td>{{ $item->name }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ $item->in_housekeeping_quantity }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-xs btn-outline-warning" data-bs-toggle="modal" data-bs-target="#sendDirtyModal{{ $item->id }}" title="Return to Laundry">
+                                                <i class="fas fa-tshirt"></i> Return
+                                            </button>
+                                            <button type="button" class="btn btn-xs btn-outline-success" data-bs-toggle="modal" data-bs-target="#requestCleanModal{{ $item->id }}" title="Request">
+                                                <i class="fas fa-truck-loading"></i> Request
+                                            </button>
+                                        </div>
+
+                                        {{-- Send Dirty Modal --}}
+                                        <div class="modal fade" id="sendDirtyModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-sm">
+                                                <div class="modal-content">
+                                                    <form action="{{ route('inventory-sync.collect-dirty') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="laundry_item_id" value="{{ $item->id }}">
+                                                        <div class="modal-header text-dark">
+                                                            <h6 class="modal-title">Return: {{ $item->name }}</h6>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-dark">
+                                                            <div class="mb-3 text-start">
+                                                                <label class="form-label small">Quantity to Send</label>
+                                                                <input type="number" name="quantity" class="form-control form-control-sm" value="{{ min(1, $item->in_housekeeping_quantity) }}" max="{{ $item->in_housekeeping_quantity }}" min="1" required>
+                                                                <div class="form-text x-small">Available in Housekeeping: {{ $item->in_housekeeping_quantity }}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-sm btn-warning">Send to Laundry</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Request Clean Modal --}}
+                                        <div class="modal fade" id="requestCleanModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-sm">
+                                                <div class="modal-content">
+                                                    <form action="{{ route('inventory-sync.request-clean') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="laundry_item_id" value="{{ $item->id }}">
+                                                        <div class="modal-header text-dark">
+                                                            <h6 class="modal-title">Request: {{ $item->name }}</h6>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-dark">
+                                                            <div class="mb-3 text-start">
+                                                                <label class="form-label small">Quantity Requested</label>
+                                                                <input type="number" name="quantity" class="form-control form-control-sm" value="1" min="1" required>
+                                                                <div class="form-text x-small">Available in Laundry: {{ $item->stock_quantity }}</div>
+                                                            </div>
+                                                            <div class="mb-3 text-start">
+                                                                <label class="form-label small">Notes (optional)</label>
+                                                                <input type="text" name="notes" class="form-control form-control-sm" placeholder="e.g. Urgent for Room 305">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-sm btn-success">Submit Request</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="mb-3 text-muted uppercase small fw-bold">My Requests</h6>
+                    @if(isset($pendingRequests) && $pendingRequests->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Qty</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($pendingRequests as $req)
+                                    <tr>
+                                        <td>{{ $req->item->name ?? 'N/A' }}</td>
+                                        <td>{{ $req->quantity }}</td>
+                                        <td>
+                                            @if($req->status === 'pending')
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            @elseif($req->status === 'approved')
+                                                <span class="badge bg-success">Approved</span>
+                                            @elseif($req->status === 'denied')
+                                                <span class="badge bg-danger">Denied</span>
+                                            @endif
+                                        </td>
+                                        <td class="small">{{ $req->created_at->format('M d, H:i') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted small">No recent requests.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

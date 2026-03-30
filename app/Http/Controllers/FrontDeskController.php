@@ -12,8 +12,8 @@ class FrontDeskController extends Controller
 {
     public function index(Request $request)
     {
-        $inHouseGuests = Booking::with(['customer', 'room.roomType'])
-            ->where('status', 'checked_in')
+        $reservedRooms = Booking::with(['customer', 'room.roomType'])
+            ->where('status', 'reserved')
             ->get();
 
         $recentIncidents = Incident::with(['customer', 'room', 'reporter'])
@@ -46,7 +46,7 @@ class FrontDeskController extends Controller
         ];
 
         return view('frontdesk.portal', compact(
-            'inHouseGuests',
+            'reservedRooms',
             'recentIncidents',
             'availableRooms',
             'occupiedRooms',

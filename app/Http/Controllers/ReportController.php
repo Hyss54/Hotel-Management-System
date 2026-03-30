@@ -8,6 +8,7 @@ use App\Models\KitchenOrder;
 use App\Models\LaundryOrder;
 use App\Models\BarOrder;
 use App\Models\Payment;
+use App\Models\Organization;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
@@ -90,5 +91,77 @@ class ReportController extends Controller
             $query->where('name', 'like', "%{$request->search}%");
         $customers = $query->paginate(30)->withQueryString();
         return view('reports.customers', compact('customers'));
+    }
+
+    public function kitchen(Request $request)
+    {
+        $from = $request->from ? \Carbon\Carbon::parse($request->from)->startOfDay() : today()->startOfDay();
+        $to = $request->to ? \Carbon\Carbon::parse($request->to)->endOfDay() : today()->endOfDay();
+        $organization_id = $request->organization_id;
+
+        $organizations = Organization::orderBy('name')->get();
+        
+        $query = KitchenOrder::with(['customer', 'booking.room'])
+            ->whereBetween('created_at', [$from, $to])
+            ->latest();
+
+        if ($organization_id) {
+            $query->whereHas('customer', function ($q) use ($organization_id) {
+                $q->where('organization_id', $organization_id);
+            });
+        }
+            
+        $orders = $query->get();
+        $selected_organization = $organization_id ? Organization::find($organization_id) : null;
+            
+        return view('reports.kitchen', compact('orders', 'from', 'to', 'organizations', 'organization_id', 'selected_organization'));
+    }
+
+    public function bar(Request $request)
+    {
+        $from = $request->from ? \Carbon\Carbon::parse($request->from)->startOfDay() : today()->startOfDay();
+        $to = $request->to ? \Carbon\Carbon::parse($request->to)->endOfDay() : today()->endOfDay();
+        $organization_id = $request->organization_id;
+
+        $organizations = Organization::orderBy('name')->get();
+        
+        $query = BarOrder::with(['customer', 'booking.room'])
+            ->whereBetween('created_at', [$from, $to])
+            ->latest();
+
+        if ($organization_id) {
+            $query->whereHas('customer', function ($q) use ($organization_id) {
+                $q->where('organization_id', $organization_id);
+            });
+        }
+            
+        $orders = $query->get();
+        $selected_organization = $organization_id ? Organization::find($organization_id) : null;
+            
+        return view('reports.bar', compact('orders', 'from', 'to', 'organizations', 'organization_id', 'selected_organization'));
+    }
+
+    public function laundry(Request $request)
+    {
+        $from = $request->from ? \Carbon\Carbon::parse($request->from)->startOfDay() : today()->startOfDay();
+        $to = $request->to ? \Carbon\Carbon::parse($request->to)->endOfDay() : today()->endOfDay();
+        $organization_id = $request->organization_id;
+
+        $organizations = Organization::orderBy('name')->get();
+        
+        $query = LaundryOrder::with(['customer', 'booking.room'])
+            ->whereBetween('created_at', [$from, $to])
+            ->latest();
+
+        if ($organization_id) {
+            $query->whereHas('customer', function ($q) use ($organization_id) {
+                $q->where('organization_id', $organization_id);
+            });
+        }
+            
+        $orders = $query->get();
+        $selected_organization = $organization_id ? Organization::find($organization_id) : null;
+            
+        return view('reports.laundry', compact('orders', 'from', 'to', 'organizations', 'organization_id', 'selected_organization'));
     }
 }

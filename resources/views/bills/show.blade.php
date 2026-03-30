@@ -8,12 +8,23 @@
         <div class="col-lg-8">
             <div class="card mb-4" id="invoice">
                 <div class="card-body p-5">
-                    <div class="row mb-4">
+
+                    {{-- Centered logo (visible in print, hidden on screen where left-aligned version shows) --}}
+                    <div class="print-logo-center text-center" style="display: none;">
+                        <img src="{{ asset('images/logo.png') }}" alt="Gold Plus Hotel Logo" style="height: 50px; margin-bottom: 4px;">
+                        <h3 class="fw-bold mb-0" style="color: var(--accent-color); font-size: 18px;">Gold Plus Hotel</h3>
+                        <div style="font-size: 11px; color: #555;">Abuakwa, Housing Road, Kumasi Ashanti Region, GPS: AH-1127-2941 | Phone: +233 (0)55 932 5033, +233 (0)36 219 5756</div>
+                        <hr style="margin: 6px 0; border-color: #eab308; border-width: 2px;">
+                    </div>
+
+                    {{-- Screen header (hidden in print) --}}
+                    <div class="row mb-4 screen-header">
                         <div class="col-sm-6">
+                            <img src="{{ asset('images/logo.png') }}" alt="Gold Plus Hotel Logo" style="height: 60px; margin-bottom: 8px;">
                             <h3 class="fw-bold mb-1" style="color: var(--accent-color);">Gold Plus Hotel</h3>
-                            <div>123 Luxury Avenue, Metropolis</div>
-                            <div>Phone: +1 234 567 890</div>
-                            <div>Email: contact@goldplushotel.com</div>
+                            <div>Abuakwa, Housing Road, Kumasi</div>
+                            <div>GPS: AH-1127-2941</div>
+                            <div>Phone: +233 (0)55 932 5033, +233 (0)36 219 5756</div>
                         </div>
                         <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
                             <h4 class="text-primary mb-1">INVOICE</h4>
@@ -25,7 +36,22 @@
                         </div>
                     </div>
 
-                    <div class="row mb-5">
+                    {{-- Print-only invoice meta row --}}
+                    <div class="print-invoice-meta" style="display: none;">
+                        <table style="width: 100%; margin-bottom: 6px;">
+                            <tr>
+                                <td style="width: 50%; font-size: 16px; font-weight: bold; color: #3b82f6;">INVOICE</td>
+                                <td style="width: 50%; text-align: right; font-size: 10px;">
+                                    <strong>Invoice No:</strong> {{ $bill->bill_number }} |
+                                    <strong>Date:</strong> {{ $bill->issued_at->format('M d, Y') }} |
+                                    <strong>Status:</strong> {{ strtoupper($bill->status) }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    {{-- Billed To / Stay Details --}}
+                    <div class="row mb-5 details-row">
                         <div class="col-sm-6">
                             <h6 class="text-muted mb-2">Billed To:</h6>
                             <strong>{{ $bill->customer->name }}</strong><br>
@@ -47,6 +73,7 @@
                         </div>
                     </div>
 
+                    {{-- Charges table --}}
                     <div class="table-responsive mb-4">
                         <table class="table mb-0">
                             <thead class="table-light">
@@ -123,7 +150,7 @@
                     @if($bill->notes)
                         <div class="text-muted small"><strong>Notes:</strong> {{ $bill->notes }}</div>
                     @endif
-                    <div class="text-center text-muted mt-5 pt-3 border-top small">
+                    <div class="text-center text-muted mt-5 pt-3 border-top small print-footer">
                         Thank you for staying at Gold Plus Hotel. We hope to see you again soon!
                     </div>
                 </div>
@@ -200,4 +227,146 @@
             @endif
         </div>
     </div>
+
+<style>
+    @media print {
+        @page {
+            size: A5 portrait;
+            margin: 2.54cm;
+        }
+
+        /* Hide everything, then show only invoice */
+        body * {
+            visibility: hidden;
+        }
+        #invoice, #invoice * {
+            visibility: visible;
+        }
+        #invoice {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        /* Show print-only elements, hide screen-only elements */
+        .print-logo-center {
+            display: block !important;
+            text-align: center !important;
+        }
+        .screen-header {
+            display: none !important;
+        }
+        .print-invoice-meta {
+            display: block !important;
+        }
+
+        /* Base typography */
+        body {
+            font-size: 13px !important;
+            line-height: 1.4 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Remove card styling */
+        .card, #invoice {
+            border: none !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+        }
+
+        .card-body {
+            padding: 0 !important;
+        }
+
+        /* Reset Bootstrap row negative margins */
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        /* Force side-by-side columns */
+        .details-row {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            width: 100% !important;
+            margin-bottom: 6px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .details-row .col-sm-6 {
+            width: 50% !important;
+            max-width: 50% !important;
+            flex: 0 0 50% !important;
+            padding: 0 10px !important;
+        }
+
+        .col-lg-8 {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
+            padding: 0 !important;
+        }
+
+        /* Typography */
+        h3 {
+            font-size: 20px !important;
+            margin-bottom: 3px !important;
+        }
+
+        h4 {
+            font-size: 18px !important;
+            margin-bottom: 3px !important;
+        }
+
+        h6 {
+            font-size: 13px !important;
+            margin-bottom: 3px !important;
+        }
+
+        .badge {
+            font-size: 11px !important;
+            padding: 3px 8px !important;
+        }
+
+        /* Reduce spacing */
+        .mb-4, .mb-5 {
+            margin-bottom: 6px !important;
+        }
+
+        .p-5 {
+            padding: 0 !important;
+        }
+
+        /* Table styling */
+        .table th {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+        }
+
+        .table td {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+        }
+
+        .fs-5 {
+            font-size: 14px !important;
+        }
+
+        /* Footer */
+        .print-footer {
+            margin-top: 10px !important;
+            padding-top: 8px !important;
+            font-size: 11px !important;
+        }
+
+        /* Hide non-invoice elements */
+        .col-lg-4, nav, .sidebar, .navbar, header, footer,
+        .page-header, .breadcrumb, .btn, .alert {
+            display: none !important;
+        }
+    }
+</style>
 @endsection

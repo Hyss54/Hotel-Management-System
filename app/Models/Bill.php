@@ -42,6 +42,22 @@ class Bill extends Model
         'issued_at' => 'datetime',
     ];
 
+    public static function generateBillNumber(): string
+    {
+        $latest = self::where('bill_number', 'like', 'BILL-GPH%')
+            ->orderBy('bill_number', 'desc')
+            ->first();
+
+        if (!$latest) {
+            return 'BILL-GPH000001';
+        }
+
+        $lastNumber = str_replace('BILL-GPH', '', $latest->bill_number);
+        $nextNumber = intval($lastNumber) + 1;
+
+        return 'BILL-GPH' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+    }
+
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);

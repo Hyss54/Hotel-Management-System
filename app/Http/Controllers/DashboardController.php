@@ -91,6 +91,12 @@ class DashboardController extends Controller
             $data['payments_today'] = Payment::whereDate('paid_at', today())->sum('amount');
         }
 
+        // Today's collections is the total cash/payment received today
+        $data['total_collections_today'] = $data['payments_today'];
+        
+        // Let's make "Today's Revenue" reflect either Sales or Collections. 
+        // Given the user's feedback, they expect to see the money coming in.
+        // We'll keep total_revenue_today as the Sales metric but ensure it's calculated clearly.
         $data['total_revenue_today'] = $data['accommodation_today'] + $data['kitchen_today'] + $data['laundry_today'] + $data['bar_today'] + $data['other_today'];
 
         // Build Chart Data

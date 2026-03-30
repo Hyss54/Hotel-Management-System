@@ -7,9 +7,14 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span>Recent Laundry Requests</span>
-            <a href="{{ route('laundry.create') }}" class="btn btn-sm btn-primary">
-                <i class="fas fa-plus"></i> New Order
-            </a>
+            <div>
+                <a href="{{ route('reports.laundry') }}" class="btn btn-sm btn-outline-secondary me-2">
+                    <i class="fas fa-print"></i> Generate Report
+                </a>
+                <a href="{{ route('laundry.create') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus"></i> New Order
+                </a>
+            </div>
         </div>
 
         <div class="card-body border-bottom bg-light">

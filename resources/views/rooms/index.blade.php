@@ -7,9 +7,11 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span>All Rooms</span>
+            @can('manage-rooms')
             <a href="{{ route('rooms.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus"></i> Add Room
             </a>
+            @endcan
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -52,8 +54,10 @@
                                             </option>
                                         </select>
                                     </form>
+                                    @can('manage-rooms')
                                     <a href="{{ route('rooms.edit', $room) }}" class="btn btn-sm btn-outline-secondary"><i
                                             class="fas fa-edit"></i></a>
+                                    @endcan
                                 </td>
                             </tr>
                         @empty

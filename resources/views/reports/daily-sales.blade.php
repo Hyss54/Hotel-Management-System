@@ -33,8 +33,12 @@
 
     <div class="row" id="printableReport">
         <div class="col-12 text-center mb-4 d-none d-print-block">
-            <h3 class="mb-0">Gold Plus Hotel</h3>
-            <h5>{{ ucfirst($period) }} Sales Report</h5>
+            <img src="{{ asset('images/logo.png') }}" alt="Gold Plus Hotel Logo" style="height: 80px; margin-bottom: 15px;">
+            <h3 class="mb-1 text-uppercase fw-bold">Gold Plus Hotel</h3>
+            <p class="mb-1">123 Hotel Avenue, City Center, Accra, Ghana</p>
+            <p class="mb-3 text-muted">Tel: +233 24 123 4567 | Email: info@goldplushotel.com</p>
+            <hr class="mb-4">
+            <h4 class="mb-1 text-primary">{{ ucfirst($period) }} Sales Report</h4>
             <p class="text-muted">{{ $label }}</p>
         </div>
 
@@ -113,6 +117,11 @@
 
     <style>
         @media print {
+            @page {
+                size: A4;
+                margin: 20mm;
+            }
+
             body {
                 background: white;
             }

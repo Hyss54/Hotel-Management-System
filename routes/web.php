@@ -12,6 +12,7 @@ use App\Http\Controllers\KitchenOrderController;
 use App\Http\Controllers\LaundryOrderController;
 use App\Http\Controllers\BarOrderController;
 use App\Http\Controllers\BarItemController;
+use App\Http\Controllers\LaundryItemController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\InventorySynchronizationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -49,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('kitchen/{kitchen}/status', [KitchenOrderController::class, 'updateStatus'])->name('kitchen.updateStatus');
 
     // Laundry
+    Route::resource('laundry-items', LaundryItemController::class);
     Route::resource('laundry', LaundryOrderController::class)->except(['edit', 'update', 'destroy']);
     Route::patch('laundry/{laundry}/status', [LaundryOrderController::class, 'updateStatus'])->name('laundry.updateStatus');
 
@@ -61,6 +64,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Housekeeping
     Route::resource('housekeeping', HousekeepingTaskController::class);
     Route::patch('housekeeping/{housekeeping}/status', [HousekeepingTaskController::class, 'updateStatus'])->name('housekeeping.updateStatus');
+
+    // Inventory Synchronization
+    Route::group(['prefix' => 'inventory-sync', 'as' => 'inventory-sync.'], function () {
+        Route::post('/collect-dirty', [InventorySynchronizationController::class, 'collectDirty'])->name('collect-dirty');
+        Route::post('/request-clean', [InventorySynchronizationController::class, 'requestClean'])->name('request-clean');
+        Route::post('/approve-request/{transaction}', [InventorySynchronizationController::class, 'approveRequest'])->name('approve-request');
+        Route::post('/deny-request/{transaction}', [InventorySynchronizationController::class, 'denyRequest'])->name('deny-request');
+        Route::post('/mark-clean', [InventorySynchronizationController::class, 'markAsClean'])->name('mark-clean');
+        Route::post('/restock', [InventorySynchronizationController::class, 'restock'])->name('restock');
+        Route::get('/request-report', [InventorySynchronizationController::class, 'requestReport'])->name('request-report');
+    });
 
     // Front Desk Portal & Incidents
     Route::get('/frontdesk', [FrontDeskController::class, 'index'])->name('frontdesk.index');
@@ -79,6 +93,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('accommodation', [ReportController::class, 'accommodation'])->name('accommodation');
         Route::get('department', [ReportController::class, 'department'])->name('department');
         Route::get('customers', [ReportController::class, 'customers'])->name('customers');
+        
+        // Department-specific reports
+        Route::get('kitchen', [ReportController::class, 'kitchen'])->name('kitchen');
+        Route::get('bar', [ReportController::class, 'bar'])->name('bar');
+        Route::get('laundry', [ReportController::class, 'laundry'])->name('laundry');
     });
 
     // Administration
@@ -96,3 +115,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+Route::get('/test-checkout/{booking}', [App\Http\Controllers\BookingController::class, 'checkOut']);
